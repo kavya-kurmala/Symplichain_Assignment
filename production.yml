@@ -1,0 +1,23 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Production Server
+        run: |
+          echo "Deploying to production EC2..."
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.PROD_EC2 }} "
+          cd app &&
+          git pull origin main &&
+          sudo systemctl restart gunicorn
+          "
