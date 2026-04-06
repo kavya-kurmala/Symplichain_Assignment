@@ -1,0 +1,32 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v3
+
+      - name: Setup Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install backend dependencies
+        run: |
+          pip install -r backend/requirements.txt
+
+      - name: Deploy to Staging Server
+        run: |
+          echo "Connecting to staging EC2 and deploying..."
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.STAGING_EC2 }} "
+          cd app &&
+          git pull origin staging &&
+          sudo systemctl restart gunicorn
+          "
